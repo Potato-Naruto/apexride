@@ -1,0 +1,42 @@
+[
+  {
+    "id": "tail-of-the-dragon", "name": "Tail of the Dragon (US-129)", "city": "Deals Gap", "region": "North Carolina / Tennessee", "country": "US",
+    "lengthKm": 18, "rating": 4.9, "curviness": 100, "tags": ["twisties", "classic"], "source": "seed",
+    "description": "318 curves in 11 miles. Expect traffic on weekends.",
+    "waypoints": [{ "lat": 35.4683, "lng": -83.9253 }, { "lat": 35.5348, "lng": -83.9977 }]
+  },
+  {
+    "id": "angeles-crest", "name": "Angeles Crest Highway (CA-2)", "city": "La Cañada Flintridge", "region": "California", "country": "US",
+    "lengthKm": 105, "rating": 4.8, "curviness": 78, "tags": ["mountain", "scenic"], "source": "seed",
+    "description": "Long mountain climb through the San Gabriels.",
+    "waypoints": [{ "lat": 34.2078, "lng": -118.2000 }, { "lat": 34.3445, "lng": -118.0245 }, { "lat": 34.3600, "lng": -117.6300 }]
+  },
+  {
+    "id": "big-sur-pch", "name": "Pacific Coast Highway: Carmel to Cambria", "city": "Carmel", "region": "California", "country": "US",
+    "lengthKm": 140, "rating": 4.9, "curviness": 62, "tags": ["coastal", "scenic"], "source": "seed",
+    "description": "Cliffside Big Sur coastline, Bixby Bridge.",
+    "waypoints": [{ "lat": 36.5552, "lng": -121.9233 }, { "lat": 36.3715, "lng": -121.9020 }, { "lat": 35.5641, "lng": -121.0807 }]
+  },
+  {
+    "id": "blue-ridge-nc", "name": "Blue Ridge Parkway: Asheville to Cherokee", "city": "Asheville", "region": "North Carolina", "country": "US",
+    "lengthKm": 120, "rating": 4.7, "curviness": 55, "tags": ["scenic", "no-trucks"], "source": "seed",
+    "description": "45 mph ridge-top sweepers with no commercial traffic.",
+    "waypoints": [{ "lat": 35.5405, "lng": -82.5100 }, { "lat": 35.3290, "lng": -82.9700 }, { "lat": 35.4776, "lng": -83.3160 }]
+  },
+  {
+    "id": "ortega-highway", "name": "Ortega Highway (CA-74)", "city": "San Juan Capistrano", "region": "California", "country": "US",
+    "lengthKm": 52, "rating": 4.4, "curviness": 70, "tags": ["twisties", "day-trip"], "source": "seed",
+    "waypoints": [{ "lat": 33.5016, "lng": -117.6625 }, { "lat": 33.6680, "lng": -117.3270 }]
+  },
+  {
+    "id": "cabot-trail", "name": "Cabot Trail Loop", "city": "Baddeck", "region": "Nova Scotia", "country": "CA",
+    "lengthKm": 300, "rating": 4.8, "curviness": 58, "tags": ["coastal", "loop"], "source": "seed",
+    "waypoints": [{ "lat": 46.1000, "lng": -60.7500 }, { "lat": 46.6300, "lng": -61.0000 }, { "lat": 46.8160, "lng": -60.7960 }, { "lat": 46.6560, "lng": -60.3900 }, { "lat": 46.1000, "lng": -60.7500 }]
+  },
+  {
+    "id": "stelvio-pass", "name": "Stelvio Pass", "city": "Bormio", "region": "Lombardy / South Tyrol", "country": "IT",
+    "lengthKm": 45, "rating": 4.9, "curviness": 95, "tags": ["alpine", "hairpins"], "source": "seed",
+    "description": "48 hairpins on the east side. Closed in winter.",
+    "waypoints": [{ "lat": 46.4670, "lng": 10.3700 }, { "lat": 46.5287, "lng": 10.4531 }, { "lat": 46.6140, "lng": 10.5900 }]
+  }
+]

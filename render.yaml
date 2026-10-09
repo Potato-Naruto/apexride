@@ -1,0 +1,15 @@
+# Optional backend (group rides, share links, Google Maps link import). One-click on https://render.com:
+# New > Blueprint > pick this repo. Then set the GitHub repo variable API_URL to the service URL.
+services:
+  - type: web
+    name: apexride-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: CORS_ORIGIN
+        sync: false # e.g. https://<user>.github.io

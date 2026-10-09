@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fluid base size: ~15px on small phones up to ~19px on tablets/desktop. All rem-based UI scales with it. */
+html { font-size: clamp(15px, 12.5px + 0.8vw, 19px); }
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #000;
+  color: #fff;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Map */
+.maplibregl-map { font: inherit; background: #e8e6df; }
+.maplibregl-ctrl-attrib { font-size: 11px; }
+.maplibregl-ctrl-top-right { padding-top: env(safe-area-inset-top); }
