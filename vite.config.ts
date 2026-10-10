@@ -8,11 +8,9 @@ import { readFileSync } from 'node:fs';
 const maplibreWorker = () => ({
   name: 'maplibre-worker',
   generateBundle(this: any) {
-    this.emitFile({
-      type: 'asset',
-      fileName: 'maplibre/maplibre-gl-worker.mjs',
-      source: readFileSync('node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs'),
-    });
+    const source = readFileSync('node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs');
+    // The second copy is where earlier cached builds look for it.
+    for (const fileName of ['maplibre/maplibre-gl-worker.mjs', 'assets/maplibre-gl-worker.mjs']) this.emitFile({ type: 'asset', fileName, source });
   },
 });
 

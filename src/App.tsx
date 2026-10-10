@@ -98,7 +98,7 @@ export function App() {
         <button
           aria-label={collapsed ? 'Show controls' : 'Hide controls'}
           onClick={() => setCollapsed(!collapsed)}
-          className="side:hidden h-7 w-full grid place-items-center bg-black/92 rounded-t-3xl border-t-2 border-x-2 border-edge"
+          className="side:hidden h-7 w-full grid place-items-center bg-black/90 rounded-t-3xl border-t-2 border-x-2 border-edge"
         >
           <span className="block w-12 h-1.5 rounded-full bg-neutral-500" />
         </button>
@@ -106,7 +106,7 @@ export function App() {
         <div
           onTouchStart={onStart}
           onTouchEnd={onEnd}
-          className={`overflow-y-auto overscroll-contain bg-black/92 backdrop-blur px-4 pt-3 pb-4 side:pt-safe side:flex-1 side:min-h-0 side:max-h-none ${
+          className={`overflow-y-auto overscroll-contain bg-black/90 backdrop-blur px-4 pt-3 pb-4 side:pt-safe side:flex-1 side:min-h-0 side:max-h-none ${
             collapsed ? 'hidden side:block' : compact ? 'max-h-[42dvh]' : 'max-h-[58dvh]'
           }`}
         >
