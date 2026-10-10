@@ -1,6 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { readFileSync } from 'node:fs';
+
+// MapLibre finds its web worker next to the bundle via import.meta.url, but the bundler never copies it.
+// Emit it at a fixed path; src/hooks/useMap.ts points setWorkerUrl() there in production.
+const maplibreWorker = () => ({
+  name: 'maplibre-worker',
+  generateBundle(this: any) {
+    this.emitFile({
+      type: 'asset',
+      fileName: 'maplibre/maplibre-gl-worker.mjs',
+      source: readFileSync('node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs'),
+    });
+  },
+});
 
 const API = 'http://localhost:3001';
 // GitHub Pages serves project sites from /<repo>/; the workflow sets VITE_BASE.
@@ -10,6 +24,7 @@ export default defineConfig({
   base,
   plugins: [
     react(),
+    maplibreWorker(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
@@ -34,6 +49,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,webmanifest}'],
         navigateFallbackDenylist: [/^\/api\//, /^\/socket\.io\//],
         runtimeCaching: [
           {

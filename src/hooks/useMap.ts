@@ -3,6 +3,9 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useApp } from '../store';
 
+// Production: the worker is emitted by vite.config.ts (dev resolves it on its own).
+if (import.meta.env.PROD) maplibregl.setWorkerUrl(`${import.meta.env.BASE_URL}maplibre/maplibre-gl-worker.mjs`);
+
 // OpenFreeMap: free vector tiles, no API key, no signup, commercial use allowed.
 // "liberty" is the full-colour style (roads, buildings, water, parks, labels).
 // Override in .env to use another style / TileJSON (self-hosted, MapTiler, ...).
