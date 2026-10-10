@@ -33,6 +33,10 @@ interface State {
   locating: boolean;
 
   groupCode: string | null;
+  /** Peer-to-peer mode: this device owns the route and sends it to joiners. */
+  groupHost: boolean;
+  /** Peer-to-peer mode: joined, waiting for the host's device to send the route. */
+  awaitingRoute: boolean;
   riders: Record<string, Rider>;
 
   setTab: (t: Tab) => void;
@@ -56,6 +60,8 @@ export const useApp = create<State>((set) => ({
   follow: true,
   locating: false,
   groupCode: null,
+  groupHost: false,
+  awaitingRoute: false,
   riders: {},
 
   setTab: (tab) => set({ tab }),

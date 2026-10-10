@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LocateFixed, LogOut, MapPin, Share2, Users } from 'lucide-react';
 import type { LatLng } from '../../shared/types';
-import { api } from '../lib/api';
+import { api, SERVER_MODE } from '../lib/api';
 import { fmtDuration, toMph } from '../lib/format';
 import { useApp } from '../store';
 import { Btn, Field, Section } from './ui';
@@ -10,7 +10,7 @@ const NAME_KEY = 'apex:name';
 export const getRiderName = () => { try { return localStorage.getItem(NAME_KEY) || 'Rider'; } catch { return 'Rider'; } };
 
 export function GroupPanel() {
-  const { route, groupCode, riders, fix, error } = useApp();
+  const { route, groupCode, groupHost, awaitingRoute, riders, fix, error } = useApp();
   const [name, setName] = useState(getRiderName());
   const [join, setJoin] = useState('');
   const [busy, setBusy] = useState(false);
@@ -25,12 +25,17 @@ export function GroupPanel() {
 
   const host = () => guard(async () => {
     const { code } = await api.share(route!);
-    useApp.setState({ groupCode: code });
+    useApp.setState({ groupCode: code, groupHost: true, awaitingRoute: false });
   });
   const joinRide = () => guard(async () => {
     const code = join.trim().toUpperCase();
-    useApp.getState().setRoute(await api.shared(code));
-    useApp.setState({ groupCode: code });
+    if (SERVER_MODE) {
+      useApp.getState().setRoute(await api.shared(code));
+      useApp.setState({ groupCode: code, groupHost: false, awaitingRoute: false });
+    } else {
+      // Peer-to-peer: the route arrives from the host's device once we are in the room.
+      useApp.setState({ groupCode: code, groupHost: false, awaitingRoute: true });
+    }
   });
   const share = () => navigator.share ? navigator.share({ title: 'Ride with me on ApexRide', url: link }).catch(() => {}) : navigator.clipboard.writeText(link);
 
@@ -59,8 +64,10 @@ export function GroupPanel() {
           </div>
           <div className="flex gap-2">
             <Btn className="flex-1" onClick={share}><Share2 /> Share link</Btn>
-            <Btn variant="ghost" onClick={() => useApp.setState({ groupCode: null })}><LogOut /> Leave</Btn>
+            <Btn variant="ghost" onClick={() => useApp.setState({ groupCode: null, groupHost: false, awaitingRoute: false })}><LogOut /> Leave</Btn>
           </div>
+          {awaitingRoute && <p className="text-apex font-semibold">Waiting for the host to send the route… the host needs to keep ApexRide open.</p>}
+          {!SERVER_MODE && !awaitingRoute && <p className="text-neutral-400 text-sm">{groupHost ? 'Riders connect directly to you, so keep ApexRide open.' : 'Connected directly to the host.'}</p>}
           <ul className="space-y-2">
             {Object.values(riders).map((r) => (
               <li key={r.id} className="flex items-center gap-3 text-lg">

@@ -14,7 +14,7 @@ import { useVoiceQuery } from './hooks/useVoiceQuery';
 import { takeDeepLinkCommand, useIntercomButton } from './hooks/useIntercomButton';
 import { useGroupSession } from './hooks/useGroupSession';
 import { useWakeLock } from './hooks/useWakeLock';
-import { api } from './lib/api';
+import { api, SERVER_MODE } from './lib/api';
 import { restoreRoute, useApp, type Tab } from './store';
 
 const TABS: { id: Tab; label: string; Icon: typeof MapIcon }[] = [
@@ -39,7 +39,11 @@ export function App() {
   useEffect(() => {
     void restoreRoute();
     const code = /^\/join\/([A-Za-z0-9]{6})$/.exec(location.pathname)?.[1]?.toUpperCase();
-    if (code) {
+    if (code && !SERVER_MODE) {
+      // Peer-to-peer: the host's device sends the route once we are in the room.
+      useApp.setState({ groupCode: code, groupHost: false, awaitingRoute: true, tab: 'group' });
+      history.replaceState(null, '', import.meta.env.BASE_URL);
+    } else if (code) {
       api.shared(code)
         .then((r) => { useApp.getState().setRoute(r); useApp.setState({ groupCode: code, tab: 'group' }); history.replaceState(null, '', import.meta.env.BASE_URL); })
         .catch((e) => useApp.setState({ error: e.message, tab: 'group' }));

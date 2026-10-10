@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { ArrowUp, Download, FileUp, Link2, Navigation, Plus, Search, Trash2, Waves } from 'lucide-react';
+import { ArrowUp, Copy, Download, ExternalLink, FileUp, Link2, Navigation, Plus, Search, Trash2, Waves } from 'lucide-react';
+import { googleMapsLinks } from '../../shared/googleLink';
 import type { LatLng } from '../../shared/types';
 import { api } from '../lib/api';
 import { buildProgressive } from '../lib/build';
@@ -33,6 +34,11 @@ export function PlanPanel() {
   const start = async () => {
     await unlockAudio(); // user gesture: lets speech + chimes play later without taps
     useApp.setState({ navigating: true, follow: true, tab: 'ride' });
+  };
+
+  const gmaps = route ? googleMapsLinks(route) : null;
+  const copy = async (text: string, label: string) => {
+    try { await navigator.clipboard.writeText(text); setOffline(`${label} copied`); } catch { window.prompt('Copy this link', text); }
   };
 
   const saveOffline = async () => {
@@ -94,6 +100,21 @@ export function PlanPanel() {
             {fmtDist(route.distance)} · {fmtDuration(route.duration)} · curviness {route.curviness}/100 · {route.maneuvers.length} cues · no stops
           </p>
           <Btn variant="primary" className="w-full text-2xl min-h-[72px]" onClick={start}><Navigation /> Start riding</Btn>
+          {gmaps && (
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <a href={gmaps.exact} target="_blank" rel="noopener noreferrer" className="flex-1 min-h-tap px-4 rounded-2xl border-2 border-edge bg-[#1c1c20] text-lg flex items-center justify-center gap-2 active:scale-[0.97]">
+                  <ExternalLink /> Open in Google Maps
+                </a>
+                <Btn aria-label="Copy Google Maps link" onClick={() => copy(gmaps.exact, 'Google Maps link')}><Copy /></Btn>
+              </div>
+              <p className="text-neutral-400 text-sm">
+                Follows this road using {gmaps.waypointCount} points along it. Google treats them as stops and may re-route between them.
+                {gmaps.truncated && ' Some of your stops were dropped (Google allows 9).'}{' '}
+                <button className="underline" onClick={() => copy(gmaps.stops, 'Stops-only link')}>Copy link with just my stops</button>
+              </p>
+            </div>
+          )}
           <Btn variant="ghost" className="w-full" onClick={saveOffline}><Download /> {offline ?? 'Save map for offline'}</Btn>
         </Section>
       )}

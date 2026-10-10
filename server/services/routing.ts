@@ -93,16 +93,22 @@ async function chooseDetours(waypoints: LatLng[]): Promise<(LatLng | null)[]> {
     ...(haversine(l.a, l.b) >= MIN_LEG_M ? PROBES.map(([t, k]) => ({ leg, via: detourPoint(l.a, l.b, t, k) })) : []),
   ]);
 
-  const results = await mapLimit(tasks, SEARCH_CONCURRENCY, async (task) => {
-    if (Date.now() > deadline) return null;
-    const { a, b } = legs[task.leg];
-    try {
-      const r = await route(task.via ? [a, task.via, b] : [a, b], false, { timeoutMs: 6_000, retries: 1 });
-      return { task, r };
-    } catch {
-      return null;
-    }
-  });
+  // Two passes: the free servers drop requests under load, so retry whatever failed once.
+  const results: ({ task: Task; r: OsrmRoute } | null)[] = tasks.map(() => null);
+  for (let pass = 0; pass < 2; pass++) {
+    const todo = tasks.map((_, i) => i).filter((i) => !results[i]);
+    if (!todo.length || Date.now() > deadline) break;
+    await mapLimit(todo, SEARCH_CONCURRENCY, async (i) => {
+      if (Date.now() > deadline) return;
+      const task = tasks[i];
+      const { a, b } = legs[task.leg];
+      try {
+        results[i] = { task, r: await route(task.via ? [a, task.via, b] : [a, b], false, { timeoutMs: 6_000, retries: 1 }) };
+      } catch {
+        /* retried on the next pass */
+      }
+    });
+  }
 
   return legs.map((_, leg) => {
     const mine = results.filter((x): x is NonNullable<typeof x> => !!x && x.task.leg === leg);

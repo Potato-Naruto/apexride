@@ -1,16 +1,20 @@
 import type { LatLng, LibraryEntry, RouteData, RoutePreference } from '../../shared/types';
 
 /**
- * Two modes:
+ * Two modes (group rides run peer-to-peer in browser mode, so no server is needed):
  *  - server mode: `npm run dev` (Vite proxies /api) or a build with VITE_API_URL set.
  *  - browser mode: static hosting (e.g. GitHub Pages) with no backend. Routing, place search, the road
  *    library and the fair-midpoint finder run in the browser against the free public services.
- *    Shared rides / group tracking / Google-link import need the server and say so.
+ *    Group rides run peer-to-peer. Only short maps.app.goo.gl links need the server (redirects).
  */
 export const API_URL: string = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 export const SERVER_MODE = import.meta.env.DEV || !!API_URL;
 
-const NEEDS_SERVER = 'This feature needs the ApexRide server (group rides, share links, Google Maps link import). Deploy the server and set VITE_API_URL.';
+const NEEDS_SERVER = 'Looking up a ride by code needs the ApexRide server.';
+
+/** Ride codes avoid look-alike characters (no O/0/I/1) so they survive being read over an intercom. */
+const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export const randomCode = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => ALPHABET[b % ALPHABET.length]).join('');
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}/api${path}`, {
@@ -30,7 +34,7 @@ export const api = {
     SERVER_MODE ? call<RouteData>('/route', post({ waypoints, prefer, name })) : local().then((l) => l.route(waypoints, prefer, name)),
 
   importUrl: (url: string, prefer: RoutePreference) =>
-    SERVER_MODE ? call<RouteData>('/import', post({ url, prefer })) : Promise.reject(new Error(NEEDS_SERVER)),
+    SERVER_MODE ? call<RouteData>('/import', post({ url, prefer })) : local().then((l) => l.importUrl(url, prefer)),
 
   importFile: (text: string, prefer: RoutePreference) => {
     if (!SERVER_MODE) return local().then((l) => l.importFile(text, prefer));
@@ -49,7 +53,7 @@ export const api = {
       : local().then((l) => l.midpoint(riders)),
 
   share: (route: RouteData) =>
-    SERVER_MODE ? call<{ code: string }>('/share', post({ route })) : Promise.reject(new Error(NEEDS_SERVER)),
+    SERVER_MODE ? call<{ code: string }>('/share', post({ route })) : Promise.resolve({ code: randomCode() }),
 
   shared: (code: string) =>
     SERVER_MODE ? call<RouteData>(`/share/${code}`) : Promise.reject(new Error(NEEDS_SERVER)),
